@@ -1,7 +1,7 @@
-# brysonAtWork
-A web site for a office game
+# Bryson At Work
+A web site for a office game.
 
-# Development evironment setup
+# Development Evironment Setup
 ## Software
 - Node js
 - NPM
