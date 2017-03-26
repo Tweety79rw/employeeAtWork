@@ -1,0 +1,125 @@
+{{#if user}}
+  <div class="ui header">You are currently logged in as <strong>{{user.username}}</strong></div>
+  <div class="ui segment">
+  {{#if guess}}
+      <p>you have guessed today {{guess.[0].date}}</p>
+  {{else}}
+    <p>Would you like to submit a guess</p>
+    <form class="ui form" role="form" action="/submit_guess" method="post">
+      <div class="field">
+        <input type="time" name="guess" placeholder="guess">
+      </div>
+      <div class="ui buttons">
+        <button class="ui submit button" type="submit">Submit</button>
+        <a href="/" class="ui cancel button">Cancel</a>
+      </div>
+    </form>
+  {{/if}}
+  </div>
+  <div class="ui segment">
+    {{#if actual}}
+      <p>Arival was at {{actual.[0].date}} reported by {{actual.[0].username}}</p>
+      {{#if guess}}
+        <p>You guess was off by {{{checkGuess guess.[0] actual.[0]}}} minutes</p>
+      {{/if}}
+    {{else}}
+        <p>Would you like to submit his arival</p>
+        <form class="ui form" role="form" action="/submit_arival" method="post">
+          <div class="field">
+            <input type="time" name="arival" placeholder="arival">
+          </div>
+          <div class="ui buttons">
+            <button class="ui submit button" type="submit">Submit</button>
+            <a href="/" class="ui cancel button">Cancel</a>
+          </div>
+        </form>
+    {{/if}}
+  </div>
+{{else}}
+  <div class="ui header">Please Login or Register</div>
+  <div class="ui segment">
+    {{#if actual}}
+      <p>Arival was at {{actual.[0].date}} reported by {{actual.[0].username}}</p>
+    {{else}}
+      <p>No arival reported</p>
+    {{/if}}
+  </div>
+{{/if}}
+<div id="chart"></div>
+<script>
+  $(document).ready(function(){
+    $.ajax({
+      url:'/api/arivals'
+    }).done(function(d){
+      var series = [];
+      series.push({
+        name:'Actual',
+        data:d.arivals.map(function(e){
+          var date = new Date(e.date);
+          var day = new Date(new Date(e.date).setHours(0,0,0,0));
+          return [day.getTime(),date.getHours()*60 + date.getMinutes()];
+        })
+      });
+      if(d.guesses && d.guesses.length>0){
+        series.push({
+          name:d.guesses[0].username,
+          data:d.guesses.map(function(e){
+            var date = new Date(e.date);
+            var day = new Date(new Date(e.date).setHours(0,0,0,0));
+            return [day.getTime(),date.getHours()*60 + date.getMinutes()];
+          })
+        })
+      }
+      var month = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+      ];
+      $('#chart').highcharts({
+        chart: {
+          type: 'spline'
+        },
+        xAxis: {
+          type: 'datetime',
+          // dateTimeLabelFormats: { // don't display the dummy year
+          //   month: '%e. %b',
+          //   year: '%b'
+          // },
+          title: {
+            text: 'Date'
+          }
+        },
+        tooltip: {
+          formatter:function(){
+            var xDate = new Date(this.x);
+            var time = this.y;
+            var hours1=parseInt(time/60);
+            var mins1=parseInt(parseInt(time-parseInt(time/60)*60));
+            return month[(xDate.getMonth()+1)]+' '+xDate.getDate() +'<br>'+hours1 + ':' + mins1;
+          }
+        },
+        yAxis:{
+
+          labels: {
+                formatter: function () {
+                    var time = this.value;
+                    var hours1=parseInt(time/60);
+                    var mins1=parseInt(parseInt(time-parseInt(time/60)*60));
+                    return hours1 + ':' + mins1;
+                }
+            }
+        },
+        series:series
+      });
+    });
+  });
+</script>

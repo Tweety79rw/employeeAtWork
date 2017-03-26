@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <title>Bryson at Work</title>
+    {{>semantic}}
+    {{>highcharts}}
+  </head>
+  <body>
+    <div class="ui menu">
+      {{#if user}}
+        <div class="right menu">
+          <a class="ui icon button" href="/logout"><i class="sign out icon"></i></a>
+        </div>
+      {{else}}
+        <div class="right menu">
+          <a class="ui icon button" href="/login"><i class="sign in icon"></i></a>
+          <a class="ui icon button" href="/register"><i class="add user icon"></i></a>
+        </div>
+      {{/if}}
+    </div>
+    {{#if error}}
+      <div class="ui header">{{error}}</div>
+    {{else}}
+      <div class="ui container">
+        {{{body}}}
+      </div>
+    {{/if}}
+  </body>
+</html>
