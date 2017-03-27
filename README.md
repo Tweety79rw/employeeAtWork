@@ -1,5 +1,5 @@
 # Bryson At Work
-A web site for a office game.
+A web site for an office game.
 
 # Development Evironment Setup
 ## Software
