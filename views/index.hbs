@@ -1,3 +1,14 @@
+<div class="ui top attached header">
+  <h2>Employee At Work</h2>
+</div>
+<div class="ui attached segment">
+  This all started when a co-worker guessed the arrival time of another co-worker, Employee, within a few seconds of his actual time. This soon turned into a game.
+  I jokingly stated that I should make a website for this game. Wanting to learn how to write code for node js anyway I sat down and started writing. This is still early in development
+  and has many more feature that need to be implemented such as rules, leader board, score cards, and other fancy analytics. On this project, I used node js, handle bars, express,
+  mongo db, jquery, highcharts, and semantic ui.
+  Any bugs can be reported to the github repository <a href="https://github.com/Tweety79rw/employeeAtWork">here</a>.
+  Anyone can play in this game. There is no money involved just bragging rights, try to be at the top of the soon to come leader board.
+</div>
 {{#if user}}
   <div class="ui header">You are currently logged in as <strong>{{user.username}}</strong></div>
   <div class="ui segment">
@@ -17,6 +28,7 @@
   {{/if}}
   </div>
   <div class="ui segment">
+
     {{#if actual}}
       <p>Arival was at {{actual.[0].date}} reported by {{actual.[0].username}}</p>
       {{#if guess}}

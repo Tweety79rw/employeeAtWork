@@ -1,4 +1,4 @@
-# Bryson At Work
+# Employee At Work
 A web site for a office game.
 
 # Development Evironment Setup
@@ -25,7 +25,7 @@ Windows
 ### Start mongodb
 Windows  
 navigate to bin folder of mongodb  
-default c:\Program Files\mongodb\server\<version>\bin 
+default c:\Program Files\mongodb\server\<version>\bin
 
 Linux and Windows  
 run  
