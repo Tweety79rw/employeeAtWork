@@ -30,9 +30,9 @@
   <div class="ui segment">
 
     {{#if actual}}
-      <p>Arival was at {{actual.[0].date}} reported by {{actual.[0].username}}</p>
+      <p>Arrival was at {{actual.[0].date}} reported by {{actual.[0].username}}</p>
       {{#if guess}}
-        <p>You guess was off by {{{checkGuess guess.[0] actual.[0]}}} minutes</p>
+        <p>Your guess was off by {{{checkGuess guess.[0] actual.[0]}}} minutes</p>
       {{/if}}
     {{else}}
         <p>Would you like to submit his arival</p>
@@ -51,30 +51,58 @@
   <div class="ui header">Please Login or Register</div>
   <div class="ui segment">
     {{#if actual}}
-      <p>Arival was at {{actual.[0].date}} reported by {{actual.[0].username}}</p>
+      <p>Arrival was at {{actual.[0].date}} reported by {{actual.[0].username}}</p>
     {{else}}
-      <p>No arival reported</p>
+      <p>No arrival reported</p>
     {{/if}}
   </div>
 {{/if}}
-<div id="chart"></div>
+<div class="ui segment">
+<div id="tabMenu" class="ui top attached tabular menu">
+  <a class="active item" data-tab="lineChart">Line</a>
+  <a class="item" data-tab="histogramChart">Histogram</a>
+</div>
+<div class="ui bottom attached active tab segment" data-tab="lineChart">
+  <div id="chart"></div>
+</div>
+<div class="ui bottom attached tab segment" data-tab="histogramChart">
+  <div id="histogramChart"></div>
+</div>
+</div>
 <script>
   $(document).ready(function(){
+    $('#tabMenu .item').tab();
     $.ajax({
-      url:'/api/arivals'
+      url:'/api/arrivals'
     }).done(function(d){
       var series = [];
+      var hist ={};
       series.push({
         name:'Actual',
+        connectNulls:false,
         data:d.arivals.map(function(e){
           var date = new Date(e.date);
           var day = new Date(new Date(e.date).setHours(0,0,0,0));
-          return [day.getTime(),date.getHours()*60 + date.getMinutes()];
+          var time = date.getHours()*60 + date.getMinutes();
+          if(!hist.hasOwnProperty(time-time%5))
+            hist[time-time%5] = 0;
+          hist[time-time%5]++;
+          return [day.getTime(),time];
         })
       });
+      var arr = [];
+      for (x in hist) {
+        if (hist.hasOwnProperty((x))) {
+            arr.push([parseFloat(x), hist[x]]);
+        }
+      }
+      arr.sort(function(a,b){
+        return a[0]-b[0];
+      })
       if(d.guesses && d.guesses.length>0){
         series.push({
           name:d.guesses[0].username,
+          connectNulls:false,
           data:d.guesses.map(function(e){
             var date = new Date(e.date);
             var day = new Date(new Date(e.date).setHours(0,0,0,0));
@@ -101,6 +129,7 @@
           type: 'spline'
         },
         xAxis: {
+          ordinal:false,
           type: 'datetime',
           // dateTimeLabelFormats: { // don't display the dummy year
           //   month: '%e. %b',
@@ -116,7 +145,7 @@
             var time = this.y;
             var hours1=parseInt(time/60);
             var mins1=parseInt(parseInt(time-parseInt(time/60)*60));
-            return month[(xDate.getMonth()+1)]+' '+xDate.getDate() +'<br>'+hours1 + ':' + mins1;
+            return month[(xDate.getMonth()+1)]+' '+xDate.getDate() +'<br>'+hours1 + ':' + ("0" + mins1).slice(-2);
           }
         },
         yAxis:{
@@ -126,12 +155,51 @@
                     var time = this.value;
                     var hours1=parseInt(time/60);
                     var mins1=parseInt(parseInt(time-parseInt(time/60)*60));
-                    return hours1 + ':' + mins1;
+                    return hours1 + ':' + ("0" + mins1).slice(-2);
                 }
             }
         },
         series:series
       });
+      $('#histogramChart').highcharts({
+        chart: {
+          type: 'column'
+        },
+        title: {
+            text: 'Highcharts Histogram'
+        },
+        tooltip: {
+          formatter:function(){
+            var time = this.x;
+            var hours1=parseInt(time/60);
+            var mins1=parseInt(parseInt(time-parseInt(time/60)*60));
+            return hours1 + ':' + ("0" + mins1).slice(-2);
+          }
+        },
+        xAxis: {
+          gridLineWidth: 1,
+          labels:{
+            formatter: function() {
+              var hours = parseInt(this.value/60);
+              var min = parseInt(parseInt(this.value-parseInt(this.value/60)*60));
+              return hours+':'+("0" + min).slice(-2);
+            }
+          }
+        },
+        yAxis: [{
+            title: {
+                text: 'Histogram Count'
+            }
+        }],
+        series:[{
+          name: 'Histogram',
+          type: 'column',
+          data: arr,
+          pointPadding: 0,
+          groupPadding: 0,
+          pointPlacement: 'between'
+        }]
+      })
     });
   });
 </script>

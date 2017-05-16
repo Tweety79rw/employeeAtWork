@@ -5,7 +5,7 @@ var Guess = require('../models/guess');
 var Actual = require('../models/actual');
 var router = express.Router();
 
-router.get('/arivals', function (req, res) {
+router.get('/arrivals', function (req, res) {
   var username = req.user?req.user.username:'';
   Actual.find({},function(err,arivals){
     var json = {
