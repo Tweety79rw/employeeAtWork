@@ -73,11 +73,12 @@ router.post('/submit_guess',function(req,res){
 });
 router.post('/submit_arival',function(req,res){
   var str = req.body.arival;
+  var exc = req.body.excuse;
   var date = new Date(),
   parts = str.match(/(\d+):(\d+)/);
   date.setHours(parseInt(parts[1]));
   date.setMinutes(parseInt(parts[2]));
-  var guess = new Actual({username:req.user.username,date:date});
+  var guess = new Actual({username:req.user.username,date:date,excuse:exc});
   guess.save(function(err){
     if(err)console.log(err);
     console.log('saved guess');

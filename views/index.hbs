@@ -39,6 +39,7 @@
         <form class="ui form" role="form" action="/submit_arival" method="post">
           <div class="field">
             <input type="time" name="arival" placeholder="arival">
+            <input type="text" name="excuse" placeholder="excuse">
           </div>
           <div class="ui buttons">
             <button class="ui submit button" type="submit">Submit</button>
@@ -87,7 +88,7 @@
           if(!hist.hasOwnProperty(time-time%5))
             hist[time-time%5] = 0;
           hist[time-time%5]++;
-          return [day.getTime(),time];
+          return {x:day.getTime(),y:time,z:e.excuse||''};
         })
       });
       var arr = [];
@@ -143,9 +144,10 @@
           formatter:function(){
             var xDate = new Date(this.x);
             var time = this.y;
+            console.log(this);
             var hours1=parseInt(time/60);
             var mins1=parseInt(parseInt(time-parseInt(time/60)*60));
-            return month[(xDate.getMonth()+1)]+' '+xDate.getDate() +'<br>'+hours1 + ':' + ("0" + mins1).slice(-2);
+            return month[(xDate.getMonth())]+' '+xDate.getDate() +'<br>'+hours1 + ':' + ("0" + mins1).slice(-2)+'<br>Reason: '+this.point.z;
           }
         },
         yAxis:{
